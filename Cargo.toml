@@ -1,0 +1,8 @@
+[package]
+name = "xwl-notifier-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+x11_get_windows = { git = "https://github.com/HiruNya/x11_get_windows.git" }
+notify-rust = "4.12.0"
