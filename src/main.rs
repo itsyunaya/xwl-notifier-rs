@@ -1,14 +1,24 @@
 #![allow(clippy::needless_return)]
 
+mod blacklist;
+
 use std::{error::Error, time::Duration, thread};
 
 use notify_rust::Notification;
 use x11_get_windows::Session;
 
-// for known windows where is_subwindow fails
-const BLACKLIST: [&str; 2] = ["Shutdown", "Friends List"];
+use crate::blacklist::{init_blacklist_file, read_blacklist};
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let blacklist: Vec<String>;
+
+    if let Err(e) = init_blacklist_file() {
+        eprintln!("Failed to initialize blacklist file: {} \nFalling back to none", e);
+        blacklist = Vec::new();
+    } else {
+        blacklist = read_blacklist()?;
+    }
+
     let mut session = Session::open().unwrap();
     let mut windows_vector: Vec<String> = Vec::new();
 
@@ -25,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         for title in current_titles {
             if !windows_vector.contains(&title) {
-                if !is_subwindow(&title, &windows_vector) {
+                if !is_subwindow(&title, &windows_vector, &blacklist) {
                     on_window_added(&title)?;
                 }
 
@@ -48,9 +58,9 @@ fn on_window_added(title: &str) -> Result<(), Box<dyn Error>> {
 
 // this isn't perfect, as not every subwindow will have the original window's name in the title too,
 // but it's the best I can do right now
-fn is_subwindow(title: &str, win_vec: &Vec<String>) -> bool {
+fn is_subwindow(title: &str, win_vec: &Vec<String>, blacklist: &[String]) -> bool {
     for entry in win_vec {
-        if title.contains(entry) || BLACKLIST.contains(&title) {
+        if title.contains(entry) || blacklist.contains(&title.to_string()) {
             return true;
         }
     }
