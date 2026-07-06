@@ -1,11 +1,11 @@
 # xwl-notifier-rs
-Tiny program to alert you of new X11 apps opening, rewritten in Rust because I'm bad at C
+xwl-notifier-rs (short for Xwayland-notifier) is a tiny program to alert you of new X11 apps opening, rewritten in Rust because I'm bad at C.
 
 ## Why?
 In the past, I've had many programs I installed on my Computer run really badly, 
 only to figure out every single time that it's because they run under Xwayland, 
-and in turn X11, by default. So I made [xwl-notifier](https://github.com/itsyunaya/xwl-notifier) (short for Xwayland-notifier)
-to send a desktop notification every time a new X11 opens, which kind of worked for a while. 
+and in turn X11, by default. So I created the original xwl-notifier in C, to send a 
+desktop notification every time a new X11 window opens, which kind of worked for a while. 
 
 Unfortunately it had some issues that I couldn't be bothered to fix, because I'm 
 neither very good at programming in C, nor good at trying to make sense of Xlib, 
