@@ -1,37 +1,26 @@
 {
 	description = "Tiny program to alert you of new X11 apps opening";
 
-	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-		flake-utils.url = "github:numtide/flake-utils";
-		crane.url = "github:ipetkov/crane";
-	};
+	inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-	outputs = { nixpkgs, flake-utils, crane, ... }:
-	let
+	outputs = { self, nixpkgs }: let
+		systems = [
+			"x86_64-linux"
+        	"aarch64-linux"
+		];
+
+		forAllSystems = f: nixpkgs.lib.genAttrs systems f;
+
 		overlay = final: prev: {
-			xwl-notifier = (crane.mkLib final).buildPackage {
-				src = (crane.mkLib final).cleanCargoSource ./.;
-				strictDeps = true;
-
-				buildInputs = [ final.libxcb ];
-				nativeBuildInputs = [ final.pkg-config ];
-			};
+			xwl-notifier = final.callPackage ./. { };
 		};
-	in
-		flake-utils.lib.eachDefaultSystem (system:
-			let
-				pkgs = import nixpkgs { inherit system; overlays = [ overlay ]; };
-			in {
-				packages = {
-					default = pkgs.xwl-notifier;
-					inherit (pkgs) xwl-notifier;
-				};
+	in {
+		overlays.default = overlay;
 
-				devShells.default = pkgs.mkShell {
-					buildInputs = with pkgs; [ libxcb pkg-config ];
-				};
-			}) // {
-				overlays.default = overlay;
-			};
+		packages = forAllSystems (sys: let
+			pkgs = import nixpkgs { system = sys; overlays = [ overlay ]; };
+		in {
+			default = pkgs.xwl-notifier;
+		});
+	};
 }

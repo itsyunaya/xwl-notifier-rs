@@ -28,27 +28,27 @@ sudo mv xwl-notifier-rs /usr/local/bin/
 
 ### From Nix Flake
 Add to your Flake inputs:
-```bash
+```nix
 inputs = {
-    # ...
-    xwl-notifier.url = "github:itsyunaya/xwl-notifier-rs";
-    # ...
+    xwl-notifier = {
+        url = "github:itsyunaya/xwl-notifier-rs";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
 };
 ```
 
 Optionally, apply the overlay:
 ```nix
-nixpkgs.overlays = [ xwl-notifier.overlays.default];
+nixpkgs.overlays = [ xwl-notifier.overlays.default ];
 ```
 
 Place in your package list:
 ```nix
 environment.systemPackages = with pkgs; [
-    # ...
     xwl-notifier
-    # ...
 ];
 ```
+
 And rebuild.
 
 ## Usage
