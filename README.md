@@ -37,34 +37,19 @@ inputs = {
 };
 ```
 
-Optionally, apply the overlay:
-```nix
-nixpkgs.overlays = [ xwl-notifier.overlays.default ];
-```
-
 Place in your package list:
 ```nix
-environment.systemPackages = with pkgs; [
-    xwl-notifier
+environment.systemPackages = [
+    inputs.xwl-notifier.packages.${pkgs.stdenv.hostPlatform.system}.default
 ];
 ```
 
 And rebuild.
 
 ## Usage
-Use any method to make it run on computer startup and enjoy! It should send a desktop 
+Use any method to make it run on startup and enjoy! It should send a desktop 
 notification every time a new X11 window opens (obviously requires a notification 
 daemon to be installed)
-
-### Examples
-For Hyprland
-```bash
-# in hyprland.conf
-exec-once = /path/to/xwl-notifier-rs
-```
-For KDE
-
-`System Settings > System > Autostart > Add new`
 
 ## Afterword
 In case of problems with the program or improvement suggestions, 
